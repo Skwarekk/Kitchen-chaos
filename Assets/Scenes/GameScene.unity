@@ -325,7 +325,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameInput: {fileID: 2013567947}
   moveSpeed: 7
-  rotateSpeed: 10
 --- !u!4 &345632354
 Transform:
   m_ObjectHideFlags: 0
