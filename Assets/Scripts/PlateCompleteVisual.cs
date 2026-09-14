@@ -12,7 +12,7 @@ public class PlateCompleteVisual : MonoBehaviour
     }
 
     [SerializeField] private PlateKitchenObject plateKitchenObject;
-    [SerializeField] private List<KitchenObjectSO_GameObject> kitchenObjectSOGameObjectList; 
+    [SerializeField] private List<KitchenObjectSO_GameObject> kitchenObjectSOGameObjectList;
 
     private void Start()
     {

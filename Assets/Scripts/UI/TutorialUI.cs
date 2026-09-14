@@ -21,7 +21,10 @@ public class TutorialUI : MonoBehaviour
 
         UpdateVisual();
 
-        Show();
+        // DEBUG TRIGGER GAME START AUTOMATICALLY
+
+        //Show();
+        Hide();
     }
 
     private void GameManager_OnStateChanged(object sender, System.EventArgs e)

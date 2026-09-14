@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
-{
+public class GameManager : MonoBehaviour {
     public static GameManager Instance { get; private set; }
 
     public event EventHandler OnStateChanged;
@@ -10,8 +9,7 @@ public class GameManager : MonoBehaviour
     public event EventHandler OnGamePaused;
     public event EventHandler OnGameUnpaused;
 
-    private enum State
-    {
+    private enum State {
         WaitingToStart,
         CountdownToStart,
         GamePlaying,
@@ -19,49 +17,45 @@ public class GameManager : MonoBehaviour
     }
 
     private State state;
-    private float countdownToStartTimer = 3f;
+    private float countdownToStartTimer = 1f;
     private float gamePlayingTimer;
-    private float gamePlayingTimerMax = 120f;
+    private float gamePlayingTimerMax = 300f;
 
     private bool isGamePaused = false;
 
-    private void Awake()
-    {
+    private void Awake() {
         Instance = this;
 
         state = State.WaitingToStart;
     }
 
-    private void Start()
-    {
+    private void Start() {
         GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
+
+        // DEBUG TRIGGER GAME START AUTOMATICALLY
+        state = State.CountdownToStart;
+        OnStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void GameInput_OnInteractAction(object sender, EventArgs e)
-    {
-        if(state == State.WaitingToStart)
-        {
+    private void GameInput_OnInteractAction(object sender, EventArgs e) {
+        if (state == State.WaitingToStart) {
             state = State.CountdownToStart;
             OnStateChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    private void GameInput_OnPauseAction(object sender, EventArgs e)
-    {
+    private void GameInput_OnPauseAction(object sender, EventArgs e) {
         TogglePauseGame();
     }
 
-    private void Update()
-    {
-        switch (state)
-        {
+    private void Update() {
+        switch (state) {
             case State.WaitingToStart:
                 break;
             case State.CountdownToStart:
                 countdownToStartTimer -= Time.deltaTime;
-                if (countdownToStartTimer < 0f)
-                {
+                if (countdownToStartTimer < 0f) {
                     state = State.GamePlaying;
                     gamePlayingTimer = gamePlayingTimerMax;
                     OnStateChanged?.Invoke(this, EventArgs.Empty);
@@ -69,8 +63,7 @@ public class GameManager : MonoBehaviour
                 break;
             case State.GamePlaying:
                 gamePlayingTimer -= Time.deltaTime;
-                if (gamePlayingTimer < 0f)
-                {
+                if (gamePlayingTimer < 0f) {
                     state = State.GameOver;
                     OnStateChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -80,44 +73,35 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void TogglePauseGame()
-    {
+    public void TogglePauseGame() {
         isGamePaused = !isGamePaused;
 
-        if (isGamePaused)
-        {
+        if (isGamePaused) {
             Time.timeScale = 0f;
             OnGamePaused?.Invoke(this, EventArgs.Empty);
-        }
-        else
-        {
+        } else {
             Time.timeScale = 1f;
             OnGameUnpaused?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    public bool IsCountdownToStartActive()
-    {
+    public bool IsCountdownToStartActive() {
         return state == State.CountdownToStart;
     }
 
-    public bool IsGamePlaying()
-    {
+    public bool IsGamePlaying() {
         return state == State.GamePlaying;
     }
 
-    public bool IsGameOver()
-    {
+    public bool IsGameOver() {
         return state == State.GameOver;
     }
 
-    public float GetCountdownToStartTimer()
-    {
+    public float GetCountdownToStartTimer() {
         return countdownToStartTimer;
     }
 
-    public float GetGamePlayingTimerNormalized()
-    {
+    public float GetGamePlayingTimerNormalized() {
         return 1 - (gamePlayingTimer / gamePlayingTimerMax);
     }
 }
