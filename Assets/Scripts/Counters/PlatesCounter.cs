@@ -1,4 +1,5 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PlatesCounter : BaseCounter
@@ -23,11 +24,15 @@ public class PlatesCounter : BaseCounter
 
             if (GameManager.Instance.IsGamePlaying() && platesSpawnedAmount < platesSpawnedAmountMax)
             {
-                platesSpawnedAmount++;
-
-                OnPlateSpawned?.Invoke(this, EventArgs.Empty);
+                PlateSpawnRpc();
             }
         }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PlateSpawnRpc() {
+        platesSpawnedAmount++;
+        OnPlateSpawned?.Invoke(this, EventArgs.Empty);
     }
 
     public override void Interact(Player player)
@@ -39,10 +44,15 @@ public class PlatesCounter : BaseCounter
             if (platesSpawnedAmount > 0)
             {
                 // There's at least one plate here
-                platesSpawnedAmount--;
                 KitchenObject.SpawnKitchenObject(plateKitchenObjectSO, player);
-                OnPlateRemoved?.Invoke(this, EventArgs.Empty);
+                InteractLogicRpc();
             }
         }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void InteractLogicRpc() {
+        platesSpawnedAmount--;
+        OnPlateRemoved?.Invoke(this, EventArgs.Empty);
     }
 }
